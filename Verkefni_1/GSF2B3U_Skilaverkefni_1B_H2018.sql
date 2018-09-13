@@ -2,6 +2,10 @@
 
 USE 0408982209_ProgressTracker_V1;
 
+-- Höfundur:
+-- Pétur Steinn Guðmundsson
+-- GAGN2VG05CU Venslaðir gagnagrunnar 2018H
+
 -- 1:
 -- Write a stored procedure TrackOverview()
 -- TrackOverview() displays the name of the track(trackName), number of courses
@@ -76,3 +80,13 @@ CALL `CourseRestrictorList`();
 -- this as a invertet part3 of this assignment.
 -- NOTE: You are given a free play as to the design of this procedure but it
 -- has to display a clear results that are profiting to the ProgressTracker system.
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `RestrictorList` //
+CREATE PROCEDURE `RestrictorList`()
+BEGIN
+	SELECT `restrictorID`, `courseNumber` FROM `Restrictors`
+	ORDER BY `restrictorID`;
+END //
+DELIMITER ;
+CALL `RestrictorList`();

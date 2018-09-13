@@ -2,6 +2,10 @@
 
 USE 0408982209_ProgressTracker_V1;
 
+-- Höfundur:
+-- Pétur Steinn Guðmundsson
+-- GAGN2VG05CU Venslaðir gagnagrunnar 2018H
+
 -- Auka data sem þarf að vera til fyrir eftirfarandi dæmi
 
 INSERT INTO `Tracks` (trackName, divisionID)
