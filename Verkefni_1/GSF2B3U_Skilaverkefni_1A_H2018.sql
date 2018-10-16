@@ -14,27 +14,27 @@ VALUES
 ('TestTrack2', 2),
 ('TestTrack3', 5);
 
-INSERT INTO TrackCourses (trackID, courseNumber)
+INSERT INTO TrackCourses (trackID, courseNumber, mandatory)
 VALUES
-	(9, 'FOR3D3U'),
-    (9, 'FOR3G3U'),
-    (9, 'FOR3L3U'),
-    (9, 'GSF2A3U'),
-    (9, 'GSF2B3U'),
-    (9, 'GSF3A3U'),
-    (9, 'GSF3B3U'),
-    (9, 'STÆ103'),
-    (9, 'STÆ203'),
-    (9, 'STÆ303'),
-    (9, 'STÆ313'),
-    (9, 'STÆ403'),
-    (9, 'STÆ503'),
-    (9, 'STÆ603'),
-    (9, 'EÐL103'),
-    (6, 'EÐL103'),
-    (6, 'STÆ103'),
-    (6, 'STÆ203'),
-    (6, 'STÆ303');
+	(9, 'FOR3D3U', 1),
+    (9, 'FOR3G3U', 1),
+    (9, 'FOR3L3U', 0),
+    (9, 'GSF2A3U', 1),
+    (9, 'GSF2B3U', 0),
+    (9, 'GSF3A3U', 0),
+    (9, 'GSF3B3U', 0),
+    (9, 'STÆ103', 1),
+    (9, 'STÆ203', 1),
+    (9, 'STÆ303', 1),
+    (9, 'STÆ313', 1),
+    (9, 'STÆ403', 1),
+    (9, 'STÆ503', 1),
+    (9, 'STÆ603', 0),
+    (9, 'EÐL103', 1),
+    (6, 'EÐL103', 0),
+    (6, 'STÆ103', 1),
+    (6, 'STÆ203', 1),
+    (6, 'STÆ303', 0);
 
 
 
