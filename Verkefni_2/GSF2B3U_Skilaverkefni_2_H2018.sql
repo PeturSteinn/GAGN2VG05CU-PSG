@@ -228,27 +228,26 @@ DELIMITER ;
 CALL `AddMandatoryCourses`(3, 9, '2018V', '2018H');
 
 SELECT `TrackCourses`.courseNumber, `TrackCourses`.trackID, `TrackCourses`.semester, `Restrictors`.courseNumber, `Restrictors`.restrictorID, `Restrictors`.restrictorType
-FROM `TrackCourses`
-LEFT JOIN `Restrictors` ON `TrackCourses`.courseNumber = `Restrictors`.courseNumber
-WHERE `TrackCourses`.courseNumber
-NOT IN (
-	SELECT `StudentCourses`.courseNumber
-	FROM `StudentCourses`
-	WHERE `StudentCourses`.studentID = 1
-	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = '2019V')
-)
-AND `TrackCourses`.mandatory != 0
-AND `TrackCourses`.trackID = 9
-AND
-(`Restrictors`.restrictorID IN (
-SELECT `StudentCourses`.courseNumber
-	FROM `StudentCourses`
-	WHERE `StudentCourses`.studentID = 1
-	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = '2019V')
-)
-OR
-`Restrictors`.restrictorID IS NULL
-);
+  FROM `TrackCourses`
+  LEFT JOIN `Restrictors` ON `TrackCourses`.courseNumber = `Restrictors`.courseNumber
+  WHERE `TrackCourses`.courseNumber
+  NOT IN (
+  	SELECT `StudentCourses`.courseNumber
+  	FROM `StudentCourses`
+  	WHERE `StudentCourses`.studentID = 1
+  	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = '2019V')
+  )
+  AND `TrackCourses`.mandatory != 0
+  AND `TrackCourses`.trackID = 9
+  AND
+  (`Restrictors`.restrictorID IN (
+  SELECT `StudentCourses`.courseNumber
+  	FROM `StudentCourses`
+  	WHERE `StudentCourses`.studentID = 1
+  	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = '2019V')
+  )
+  OR
+  `Restrictors`.restrictorID IS NULL);
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `NewStudentCourses` //
