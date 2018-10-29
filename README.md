@@ -1,37 +1,9 @@
-## Welcome to GitHub Pages
+# [Verkefni 1 A/B](https://petursteinn.github.io/GAGN2VG05CU-PSG/Verkefni_1/Verkefni_1)
 
-You can use the [editor on GitHub](https://github.com/PeturSteinn/GAGN2VG05CU-PSG/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+# [Verkefni 2](https://petursteinn.github.io/GAGN2VG05CU-PSG/Verkefni_2/Verkefni_2)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# [Verkefni 3](https://petursteinn.github.io/GAGN2VG05CU-PSG/Verkefni_3/Verkefni_3)
 
-### Markdown
+# [Verkefni 4](https://petursteinn.github.io/GAGN2VG05CU-PSG/Verkefni_4/Verkefni_4)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/PeturSteinn/GAGN2VG05CU-PSG/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+# [Verkefni 5](https://petursteinn.github.io/GAGN2VG05CU-PSG/Verkefni_5/Verkefni_5)
