@@ -4,11 +4,16 @@ CREATE PROCEDURE `SemesterInfo`()
 BEGIN
   DECLARE firstRun BOOLEAN DEFAULT TRUE;
   DECLARE done BOOLEAN DEFAULT FALSE;
-  DECLARE infoJson JSON DEFAULT '{}';
+  DECLARE infoJson JSON DEFAULT '[]';
 
   -- Current variables
+  DECLARE currSemesterIndex INT UNSIGNED DEFAULT 0;
+  DECLARE currStudentIndex INT UNSIGNED DEFAULT 0;
   DECLARE currSemester CHAR(10);
   DECLARE currStudentID INT;
+  DECLARE currStudentName VARCHAR(140);
+  DECLARE currStudentSSN VARCHAR(10);
+  DECLARE currCourseNumber CHAR(10);
 
   -- Current cursor variables
   DECLARE currCurSemester CHAR(10);
@@ -45,7 +50,7 @@ BEGIN
     END IF;
 
     --  Set up a structure for a new semester
-    SET infoJson = JSON_INSERT(infoJson, CONCAT('$."', currCurSemester, '"'), JSON_OBJECT('nemendur', JSON_OBJECT()));
+    SET infoJson = JSON_ARRAY_APPEND(infoJson, '$', JSON_OBJECT(currCurSemester, JSON_OBJECT("nemendur", JSON_ARRAY())));
 
     -- /Code here
 
@@ -60,9 +65,12 @@ BEGIN
       -- Code here
 
       SET currStudentID = currCurStudentID;
+      SET currStudentName = currCurStudentName;
+      SET currStudentSSN = currCurStudentSSN;
+      SET currCourseNumber = currCurCourseNumber;
 
       -- Create a student within a semester
-      SET infoJson = JSON_INSERT(infoJson, CONCAT('$."', currCurSemester, '".nemendur."', currCurStudentID, '"'), JSON_OBJECT("name", currCurStudentName, "ssn", currCurStudentSSN, "afangar", JSON_ARRAY()));
+      SET infoJson = JSON_ARRAY_APPEND(infoJson, CONCAT('$[', currSemesterIndex, ']."', currCurSemester, '".nemendur'), JSON_OBJECT(currCurStudentID, JSON_OBJECT("name", currCurStudentName, "ssn", currCurStudentSSN, "afangar", JSON_ARRAY())));
 
       -- /Code here
 
@@ -76,14 +84,26 @@ BEGIN
         END IF;
         -- Code here
 
+        SET currCourseNumber = currCurCourseNumber;
+
         -- Add class to student
-        SET infoJson = JSON_ARRAY_APPEND(infoJson, CONCAT('$."', currCurSemester, '".nemendur."', currCurStudentID, '".afangar'), currCurCourseNumber);
+        SET infoJson = JSON_ARRAY_APPEND(infoJson, CONCAT('$[', currSemesterIndex, ']."', currCurSemester, '".nemendur[', currStudentIndex, ']."', currCurStudentID, '".afangar'), currCurCourseNumber);
         FETCH curStudentsInfo INTO currCurSemester, currCurStudentID, currCurStudentName, currCurStudentSSN, currCurCourseNumber;
 
         -- /Code here
 
       END WHILE; -- End add-class-to-student loop
+
+      -- In order to navigate to a student (which is stored in a list in json) we have to keep track of an index
+      SET currStudentIndex = currStudentIndex + 1;
+
     END WHILE; -- End add-student-to-semester loop
+
+  -- In order to navigate to a semester (which is stored in a list in json) we have to keep track of an index
+  SET currSemesterIndex = currSemesterIndex + 1;
+
+  -- When we switch to a new semester we reset the studentIndex to 0
+  SET currStudentIndex = 0;
   END LOOP infoLoop;
 
   -- Finish with returning the complete JSON string
@@ -103,7 +123,7 @@ CALL `SemesterInfo`();
 ALTER TABLE `Schools` ADD COLUMN `schoolInfo` JSON DEFAULT NULL;
 INSERT INTO `Schools`(`schoolName`, `schoolInfo`)
 VALUES
-('Menntaskólinn í Reykjavík'),
+('Menntaskólinn í Reykjavík', ),
 ('Verzlunarskóli Íslands'),
 ('Menntaskólinn við Sund'),
 ('Menntaskólinn að Laugarvatni'),

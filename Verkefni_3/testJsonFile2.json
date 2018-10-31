@@ -1,0 +1,54 @@
+{
+  "2018H": {
+    "nemendur": {
+      "3": {
+        "ssn": "2001979230",
+        "name": "Birkir Geir Alexandersson",
+        "afangar": ["GSF2A3U", "STÆ203", "STÆ203", "FOR3D3U"]
+      }
+    }
+  },
+  "2018V": {
+    "nemendur": {
+      "1": {
+        "ssn": "1505957542",
+        "name": "Þórir Emilsson",
+        "afangar": ["STÆ103"]
+      },
+      "2": {
+        "ssn": "0110929823",
+        "name": "Elín Axelsdóttir",
+        "afangar": ["GSF2A3U"]
+      },
+      "3": {
+        "ssn": "2001979230",
+        "name": "Birkir Geir Alexandersson",
+        "afangar": ["STÆ103", "EÐL103", "FOR3L3U"]
+      },
+      "4": {
+        "ssn": "1108993608",
+        "name": "Ingvar Hlynsson",
+        "afangar": ["FOR3D3U"]
+      },
+      "5": {
+        "ssn": "1508984089",
+        "name": "Reynir Ingvarsson",
+        "afangar": ["STÆ203"]
+      },
+      "6": {
+        "ssn": "1707001234",
+        "name": "Róbert Ingi",
+        "afangar": ["STÆ603"]
+      }
+    }
+  },
+  "2020H": {
+    "nemendur": {
+      "1": {
+        "ssn": "1505957542",
+        "name": "Þórir Emilsson",
+        "afangar": ["EÐL103", "FOR3D3U", "GSF2A3U", "STÆ203", "test101"]
+      }
+    }
+  }
+}
