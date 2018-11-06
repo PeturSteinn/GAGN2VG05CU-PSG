@@ -12,4 +12,59 @@
       "kennitala": "000000-0000"
     }
   }
+} {
+  "heiti": "Fjölbrautaskóli Suðurlands",
+  "skammStafir": "FSu",
+  "simi": 4808100,
+  "stadur": {
+    "postNumer": 800,
+    "gata": "Tryggvagata",
+    "gataNr": 25
+  },
+  "brautir": {
+    "1": {
+      "heiti": "Grunndeild Rafiðnaða",
+      "einingar": 120,
+      "student": false,
+      "kennarar": ["Þór", "Grímur"]
+    }
+  },
+  "storf": {
+    "skolastjori": {
+      "laun": 0,
+      "timar": 0
+    },
+    "kennariAlmennur": {
+      "laun": 0,
+      "timar": 0
+    },
+    "kennariIdnadar": {
+      "laun": 0,
+      "timar": 0
+    },
+    "kennariSertharfir": {
+      "laun": 0,
+      "timar": 0
+    },
+    "kokkur": {
+      "laun": 0,
+      "timar": 0
+    }
+  }
+}
+
+{
+  "heiti": "Menntaskólinn við Sund",
+  "stuttNafn": "MS",
+  "stadsetning": {
+    "lat": 0,
+    "lon": 0
+  },
+  "fjoldiNemenda": 1100,
+  "fjoldiKennara": 90,
+  "samstarfsadilar": ["Strætó", "Erasmus+"],
+  "skrifstofa": {
+    "simi": 1234567,
+    "opnun": "Mán-Fös, 8-16"
+  }
 }
