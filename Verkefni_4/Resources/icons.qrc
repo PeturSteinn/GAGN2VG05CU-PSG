@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+  <qresource>
+    <file>icons/png/cross.png</file>
+    <file>icons/png/folder.png</file>
+    <file>icons/png/plus.png</file>
+    <file>icons/png/repeat.png</file>
+    <file>icons/png/search.png</file>
+  </qresource>
+</RCC>
