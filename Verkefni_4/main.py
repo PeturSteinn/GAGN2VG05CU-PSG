@@ -1,18 +1,29 @@
-import sys
+import sys, datetime
 from lib.ProgressTrackerConnect import *
 from Frames.mainWindow import Ui_ProgressTracker
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
 from PyQt5.QtGui import QPixmap
 
-allCourses = list()
-allDivisions = list()
-allRestrictors = list()
-allSchools = list()
-allStudentCourses = list()
-allStudents = list()
-allTrackCourses = list()
-allTracks = list()
+def getCurrSemester():
+    currDate = datetime.datetime.now()
+    if currDate.month > 6: return "{}H".format(currDate.year)
+    else: return "{}V".format(currDate.year)
+
+def getNextSemester(sem):
+    if sem[-1] == "H": return "{}V".format(int(sem[:-1]) + 1)
+    else: return "{}H".format(sem[:-1])
+
+def generateSemesters():
+    start = "2015V"
+    end = "{}{}".format(datetime.datetime.now().year + 3, start[-1])
+    semesters = [start]
+    semester = start
+
+    while(semester != end):
+        semester = getNextSemester(semester)
+        semesters.append(semester)
+    return semesters
 
 class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
     def __init__(self):
@@ -75,8 +86,44 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
         self.pushButton_43.clicked.connect(self.handleUpdateSearchTrack)
 
         # DeletePage
+        self.pushButton_15.clicked.connect(self.handleDeleteCourse)
+        self.pushButton_16.clicked.connect(self.handleDeleteDivisions)
+        self.pushButton_17.clicked.connect(self.handleDeleteRestrictors)
+        self.pushButton_18.clicked.connect(self.handleDeleteSchools)
+        self.pushButton_19.clicked.connect(self.handleDeleteStudentCourses)
+        self.pushButton_21.clicked.connect(self.handleDeleteStudents)
+        self.pushButton_22.clicked.connect(self.handleDeleteTrackCourses)
+        self.pushButton_23.clicked.connect(self.handleDeleteTracks)
+
+        self.pushButton_52.clicked.connect(self.handleDeleteClearCourse)
+        self.pushButton_54.clicked.connect(self.handleDeleteClearDivisions)
+        self.pushButton_56.clicked.connect(self.handleDeleteClearRestrictors)
+        self.pushButton_58.clicked.connect(self.handleDeleteClearSchools)
+        self.pushButton_60.clicked.connect(self.handleDeleteClearStudentCourses)
+        self.pushButton_62.clicked.connect(self.handleDeleteClearStudents)
+        self.pushButton_64.clicked.connect(self.handleDeleteClearTrackCourses)
+        self.pushButton_66.clicked.connect(self.handleDeleteClearTracks)
+
+        self.pushButton_53.clicked.connect(self.handleDeleteSearchCourse)
+        self.pushButton_55.clicked.connect(self.handleDeleteSearchDivisions)
+        self.pushButton_57.clicked.connect(self.handleDeleteSearchRestrictors)
+        self.pushButton_59.clicked.connect(self.handleDeleteSearchSchools)
+        self.pushButton_61.clicked.connect(self.handleDeleteSearchStudentCourses)
+        self.pushButton_63.clicked.connect(self.handleDeleteSearchStudents)
+        self.pushButton_65.clicked.connect(self.handleDeleteSearchTrackCourses)
+        self.pushButton_67.clicked.connect(self.handleDeleteSearchTracks)
 
         # ExtraPage
+
+        self.pushButton_70.clicked.connect(self.handleExtraValSearchStud)
+        self.pushButton_69.clicked.connect(self.handleExtraValClear)
+        self.pushButton_68.clicked.connect(self.handleExtraValSearchStudentCourses)
+
+        self.pushButton_71.clicked.connect(self.handleExtraValNextSemSearchStud)
+        self.pushButton_72.clicked.connect(self.handleExtraValNextSemClear)
+        self.pushButton_73.clicked.connect(self.handleExtraValNextSemSearchNextSem)
+
+        self.pushButton_24.clicked.connect(self.handleExtraValBtn)
 
         # Tabs
         self.createTabWidget.currentChanged['int'].connect(lambda: self.onTab(self.createTabWidget, self.createTabWidget.currentIndex()))
@@ -90,10 +137,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
 
     def onTab(self, currWidg, currInd):
         print("CurrentWidget: {} | CurrentIndex: {}".format(currWidg.objectName(), currInd))
-        if currWidg.objectName() == "readTabWidget":
-            general = GeneralSP()
-            describe = DescribeSP()
+        general = GeneralSP()
+        describe = DescribeSP()
 
+        if currWidg.objectName() == "readTabWidget":
             if currInd == 0:
                 self.treeWidget.setHeaderLabels([i[0] for i in describe.describeCourses()])     # List
                 self.treeWidget_2.setHeaderLabels([i[0] for i in describe.describeCourses()])   # Search
@@ -141,6 +188,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
                 self.treeWidget_37.setHeaderLabels([i[0] for i in describe.describeTracks()]) # Search
                 self.treeWidget_38.clear()
                 for i in general.tracksList(): QtWidgets.QTreeWidgetItem(self.treeWidget_38, list(map(str, i)))
+
+        elif currWidg.objectName() == "deleteTabWidget":
+            if currInd == 0: self.treeWidget_39.setHeaderLabels([i[0] for i in describe.describeCourses()])   # Search
+            elif currInd == 1: self.treeWidget_40.setHeaderLabels([i[0] for i in describe.describeDivisions()]) # Search
+            elif currInd == 2: self.treeWidget_41.setHeaderLabels([i[0] for i in describe.describeRestrictors()]) # Search
+            elif currInd == 3: self.treeWidget_42.setHeaderLabels([i[0] for i in describe.describeSchools()]) # Search
+            elif currInd == 4: self.treeWidget_43.setHeaderLabels([i[0] for i in describe.describeStudentCourses()]) # Search
+            elif currInd == 5: self.treeWidget_44.setHeaderLabels([i[0] for i in describe.describeStudents()]) # Search
+            elif currInd == 6: self.treeWidget_45.setHeaderLabels([i[0] for i in describe.describeTrackCourses()]) # Search
+            elif currInd == 7: self.treeWidget_46.setHeaderLabels([i[0] for i in describe.describeTracks()]) # Search
+
+        elif currWidg.objectName() == "extraTabWidget":
+            customFunc = CustomF()
+            if currInd == 0:
+                stats = customFunc.statistics()
+                self.label_70.setText("Áfangar: {}".format(stats['coursesCount']))
+                self.label_71.setText("Greinar: {}".format(stats['divisionsCount']))
+                self.label_72.setText("Takmarkanir: {}".format(stats['restrictorsCount']))
+                self.label_73.setText("Skólar: {}".format(stats['schoolsCount']))
+                self.label_74.setText("Brautir: {}".format(stats['tracksCount']))
+                self.label_75.setText("Áfangar á brautum: {}".format(stats['trackCoursesCount']))
+                self.label_76.setText("Nemendur: {}".format(stats['studentsCount']))
+                self.label_77.setText("Áfangar á nemendum: {}".format(stats['studentCoursesCount']))
+
+            if currInd == 1:
+                self.treeWidget_12.setHeaderLabels(['Áfangi', 'Undanfari', 'Önn', 'restrictorType'])
+
+                self.comboBox_16.clear()
+                self.comboBox_16.addItems(generateSemesters())
+                index = self.comboBox_16.findText(getCurrSemester(), QtCore.Qt.MatchFixedString)
+                if index >= 0: self.comboBox_16.setCurrentIndex(index)
+
+            elif currInd == 2:
+                self.treeWidget_11.setHeaderLabels([i[0] for i in describe.describeStudentCourses()])
 
     def display(self, i, currWidg):
         self.stackedWidget.setCurrentWidget(i)
@@ -233,9 +314,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
         print("Pressed Leita (Áfangi á braut)")
         general = GeneralSP()
         self.treeWidget_36.clear()
-        sem = self.comboBox_17.currentText()
-        if self.comboBox_17.currentText() == "None": sem = None # Vesen
-        for i in general.trackCoursesSingle(self.lineEdit_28.text(), self.lineEdit_27.text(), sem): QtWidgets.QTreeWidgetItem(self.treeWidget_36, list(map(str, i)))
+        for i in general.trackCoursesSingle(self.lineEdit_28.text(), self.lineEdit_27.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_36, list(map(str, i)))
 
     def handleReadTrack(self):
         print("Pressed Leita (Braut)")
@@ -285,7 +364,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
     def handleUpdateTrackCourse(self):
         print("Pressed Update (Áfangi á braut)")
         general = GeneralSP()
-        results = general.trackCoursesUpdate(self.lineEdit_34.text(), self.lineEdit_33.text(), self.lineEdit_57.text(), self.lineEdit_58.text(), self.comboBox_34.currentText(), self.comboBox_29.currentText(), self.comboBox_27.currentText())
+        results = general.trackCoursesUpdate(self.lineEdit_34.text(), self.lineEdit_33.text(), self.lineEdit_57.text(), self.lineEdit_58.text(), self.comboBox_29.currentText(), self.comboBox_27.currentText())
         print(results)
 
     def handleUpdateTrack(self):
@@ -396,8 +475,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
         self.lineEdit_34.setEnabled(True)
         self.lineEdit_57.clear()
         self.lineEdit_57.setEnabled(True)
-        self.comboBox_34.setCurrentIndex(0)
-        self.comboBox_34.setEnabled(True)
         self.pushButton_42.setEnabled(True)
         self.pushButton_34.setEnabled(False)
 
@@ -486,15 +563,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
     def handleUpdateSearchTrackCourse(self):
         print("Pressed Update Leit (Áfangi á braut)")
         general = GeneralSP()
-        sem = self.comboBox_34.currentText()
-        if self.comboBox_34.currentText() == "None": sem = None
-        if not general.trackCoursesSingle(self.lineEdit_34.text(), self.lineEdit_57.text(), sem): return
+        if not general.trackCoursesSingle(self.lineEdit_34.text(), self.lineEdit_57.text()): return
         self.lineEdit_33.setEnabled(True)
         self.lineEdit_58.setEnabled(True)
         self.comboBox_27.setEnabled(True)
         self.comboBox_29.setEnabled(True)
         self.lineEdit_34.setEnabled(False)
-        self.comboBox_34.setEnabled(False)
         self.lineEdit_57.setEnabled(False)
         self.pushButton_42.setEnabled(False)
         self.pushButton_34.setEnabled(True)
@@ -509,6 +583,306 @@ class MainWindow(QtWidgets.QMainWindow, Ui_ProgressTracker):
         self.lineEdit_60.setEnabled(False)
         self.pushButton_43.setEnabled(False)
         self.pushButton_35.setEnabled(True)
+
+    def handleDeleteCourse(self):
+        print("Pressed Delete (Áfangi)")
+        general = GeneralSP()
+        general.coursesDelete(self.lineEdit_61.text())
+
+    def handleDeleteDivisions(self):
+        print("Pressed Delete (Grein)")
+        general = GeneralSP()
+        general.divisionsDelete(self.lineEdit_62.text())
+
+    def handleDeleteRestrictors(self):
+        print("Pressed Delete (Takmarka)")
+        general = GeneralSP()
+        general.restrictorsDelete(self.lineEdit_69.text(), self.lineEdit_63.text())
+
+    def handleDeleteSchools(self):
+        print("Pressed Delete (Skóli)")
+        general = GeneralSP()
+        general.schoolsDelete(self.lineEdit_64.text())
+
+    def handleDeleteStudentCourses(self):
+        print("Pressed Delete (Áfangi á nemanda)")
+        general = GeneralSP()
+        general.studentCoursesDelete(self.lineEdit_71.text(), self.lineEdit_65.text(), self.lineEdit_70.text(), self.comboBox_32.currentText())
+
+    def handleDeleteStudents(self):
+        print("Pressed Delete (Nemandi)")
+        general = GeneralSP()
+        general.studentsDelete(self.lineEdit_66.text())
+
+    def handleDeleteTrackCourses(self):
+        print("Pressed Delete (Áfangi á braut)")
+        general = GeneralSP()
+        general.trackCoursesDelete(self.lineEdit_67.text(), self.lineEdit_72.text())
+
+    def handleDeleteTracks(self):
+        print("Pressed Delete (Braut)")
+        general = GeneralSP()
+        general.tracksDelete(self.lineEdit_68.text())
+
+    def handleDeleteClearCourse(self):
+        print("Pressed Delete Hreinsa (Áfanga)")
+        self.lineEdit_61.clear()
+        self.lineEdit_61.setEnabled(True)
+        self.pushButton_53.setEnabled(True)
+        self.pushButton_15.setEnabled(False)
+        self.treeWidget_39.clear()
+
+    def handleDeleteClearDivisions(self):
+        print("Pressed Delete Hreinsa (Grein)")
+        self.lineEdit_62.clear()
+        self.lineEdit_62.setEnabled(True)
+        self.pushButton_55.setEnabled(True)
+        self.pushButton_16.setEnabled(False)
+        self.treeWidget_40.clear()
+
+    def handleDeleteClearRestrictors(self):
+        print("Pressed Delete Hreinsa (Takmörk)")
+        self.lineEdit_69.clear()
+        self.lineEdit_63.clear()
+        self.lineEdit_69.setEnabled(True)
+        self.lineEdit_63.setEnabled(True)
+        self.pushButton_57.setEnabled(True)
+        self.pushButton_17.setEnabled(False)
+        self.treeWidget_41.clear()
+
+    def handleDeleteClearSchools(self):
+        print("Pressed Delete Hreinsa (Skóli)")
+        self.lineEdit_64.clear()
+        self.lineEdit_64.setEnabled(True)
+        self.pushButton_59.setEnabled(True)
+        self.pushButton_18.setEnabled(False)
+        self.treeWidget_42.clear()
+
+    def handleDeleteClearStudentCourses(self):
+        print("Pressed Delete Hreinsa (Áfangi á nemanda)")
+        self.lineEdit_71.clear()
+        self.lineEdit_65.clear()
+        self.lineEdit_70.clear()
+        self.comboBox_32.setCurrentIndex(0)
+        self.lineEdit_71.setEnabled(True)
+        self.lineEdit_65.setEnabled(True)
+        self.lineEdit_70.setEnabled(True)
+        self.comboBox_32.setEnabled(True)
+        self.pushButton_61.setEnabled(True)
+        self.pushButton_19.setEnabled(False)
+        self.treeWidget_43.clear()
+
+    def handleDeleteClearStudents(self):
+        print("Pressed Delete Hreinsa (Nemanda)")
+        self.lineEdit_66.clear()
+        self.lineEdit_66.setEnabled(True)
+        self.pushButton_63.setEnabled(True)
+        self.pushButton_21.setEnabled(False)
+        self.treeWidget_44.clear()
+
+    def handleDeleteClearTrackCourses(self):
+        print("Pressed Delete Hreinsa (Áfangi á braut)")
+        self.lineEdit_67.clear()
+        self.lineEdit_72.clear()
+        self.lineEdit_67.setEnabled(True)
+        self.lineEdit_72.setEnabled(True)
+        self.pushButton_65.setEnabled(True)
+        self.pushButton_22.setEnabled(False)
+        self.treeWidget_45.clear()
+
+    def handleDeleteClearTracks(self):
+        print("Pressed Delete Hreinsa (Braut)")
+        self.lineEdit_68.clear()
+        self.lineEdit_68.setEnabled(True)
+        self.pushButton_67.setEnabled(True)
+        self.pushButton_23.setEnabled(False)
+        self.treeWidget_46.clear()
+
+    def handleDeleteSearchCourse(self):
+        print("Pressed Delete Leita (Áfanga)")
+        general = GeneralSP()
+        if not general.coursesSingle(self.lineEdit_61.text()): return
+        self.lineEdit_61.setEnabled(False)
+        self.pushButton_15.setEnabled(True)
+        self.pushButton_53.setEnabled(False)
+        print(self.lineEdit_61.text())
+        self.treeWidget_39.clear()
+        for i in general.coursesSingle(self.lineEdit_61.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_39, list(map(str, i)))
+
+
+    def handleDeleteSearchDivisions(self):
+        print("Pressed Delete Leita (Grein)")
+        general = GeneralSP()
+        if not general.divisionsSingle(self.lineEdit_62.text()): return
+        self.lineEdit_62.setEnabled(False)
+        self.pushButton_16.setEnabled(True)
+        self.pushButton_55.setEnabled(False)
+        for i in general.divisionsSingle(self.lineEdit_62.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_40, list(map(str, i)))
+
+    def handleDeleteSearchRestrictors(self):
+        print("Pressed Delete Leita (Takmörk)")
+        general = GeneralSP()
+        if not general.restrictorsSingle(self.lineEdit_69.text(), self.lineEdit_63.text()): return
+        self.lineEdit_69.setEnabled(False)
+        self.lineEdit_63.setEnabled(False)
+        self.pushButton_17.setEnabled(True)
+        self.pushButton_57.setEnabled(False)
+        for i in general.restrictorsSingle(self.lineEdit_69.text(), self.lineEdit_63.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_41, list(map(str, i)))
+
+    def handleDeleteSearchSchools(self):
+        print("Pressed Delete Leita (Skóli)")
+        general = GeneralSP()
+        if not general.schoolsSingle(self.lineEdit_64.text()): return
+        self.lineEdit_64.setEnabled(False)
+        self.pushButton_18.setEnabled(True)
+        self.pushButton_59.setEnabled(False)
+        for i in general.schoolsSingle(self.lineEdit_64.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_42, list(map(str, i)))
+
+    def handleDeleteSearchStudentCourses(self):
+        print("Pressed Delete Leita (Áfangi á nemanda)")
+        general = GeneralSP()
+        if not general.studentCoursesSingle(self.lineEdit_71.text(), self.lineEdit_65.text(), self.lineEdit_70.text(), self.comboBox_32.currentText()): return
+        self.lineEdit_71.setEnabled(False)
+        self.lineEdit_65.setEnabled(False)
+        self.lineEdit_70.setEnabled(False)
+        self.comboBox_32.setEnabled(False)
+        self.pushButton_19.setEnabled(True)
+        self.pushButton_61.setEnabled(False)
+        for i in general.studentCoursesSingle(self.lineEdit_71.text(), self.lineEdit_65.text(), self.lineEdit_70.text(), self.comboBox_32.currentText()): QtWidgets.QTreeWidgetItem(self.treeWidget_43, list(map(str, i)))
+
+    def handleDeleteSearchStudents(self):
+        print("Pressed Delete Leita (Nemanda)")
+        general = GeneralSP()
+        if not general.studentsSingle(self.lineEdit_66.text()): return
+        self.lineEdit_66.setEnabled(False)
+        self.pushButton_21.setEnabled(True)
+        self.pushButton_63.setEnabled(False)
+        for i in general.studentsSingle(self.lineEdit_66.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_44, list(map(str, i)))
+
+    def handleDeleteSearchTrackCourses(self):
+        print("Pressed Delete Leita (Áfangi á braut)")
+        general = GeneralSP()
+        if not general.trackCoursesSingle(self.lineEdit_67.text(), self.lineEdit_72.text()): return
+        self.lineEdit_67.setEnabled(False)
+        self.lineEdit_72.setEnabled(False)
+        self.pushButton_22.setEnabled(True)
+        self.pushButton_65.setEnabled(False)
+        for i in general.trackCoursesSingle(self.lineEdit_67.text(), self.lineEdit_72.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_45, list(map(str, i)))
+
+    def handleDeleteSearchTracks(self):
+        print("Pressed Delete Leita (Braut)")
+        general = GeneralSP()
+        if not general.tracksSingle(self.lineEdit_68.text()): return
+        self.lineEdit_68.setEnabled(False)
+        self.pushButton_23.setEnabled(True)
+        self.pushButton_67.setEnabled(False)
+        for i in general.tracksSingle(self.lineEdit_68.text()): QtWidgets.QTreeWidgetItem(self.treeWidget_46, list(map(str, i)))
+
+    # Custom functions
+
+    def handleExtraValBtn(self): # SELECT NEXT COURSES
+        customFunc = CustomF()
+        print("Clicked Extra Val")
+        print(customFunc.selectNextCourses())
+        # return customFunc.selectNextCourses()
+
+    def handleExtraValSearchStud(self):
+        print("Clicked Extra Val leit Search Student")
+
+        general = GeneralSP()
+        if not general.studentsSingle(self.lineEdit_75.text()): return
+        self.lineEdit_73.setEnabled(True)
+        self.comboBox_15.setEnabled(True)
+        self.pushButton_68.setEnabled(True)
+        self.lineEdit_75.setEnabled(False)
+        self.pushButton_70.setEnabled(False)
+
+        semestersComboBox = set()
+        for i in general.studentCoursesList():
+            if str(i[0]) == self.lineEdit_75.text():
+                semestersComboBox.add(i[4])
+
+        self.comboBox_15.clear()
+        self.comboBox_15.addItem("Allar annir")
+        self.comboBox_15.addItems(semestersComboBox)
+
+    def handleExtraValClear(self):
+        print("Clicked Extra Val leit Clear")
+
+        self.lineEdit_75.setEnabled(True)
+        self.lineEdit_75.clear()
+        self.lineEdit_73.setEnabled(False)
+        self.lineEdit_73.clear()
+        self.comboBox_15.setEnabled(False)
+        self.comboBox_15.setCurrentIndex(0)
+        self.pushButton_68.setEnabled(False)
+        self.pushButton_70.setEnabled(True)
+        self.treeWidget_11.clear()
+
+    def handleExtraValSearchStudentCourses(self):
+        print("Clicked Extra Val leit Search StudentCourses")
+        general = GeneralSP()
+        allClasses = general.studentCoursesList()
+
+        if self.comboBox_15.currentText() == "Allar annir":
+            if self.lineEdit_73.text():
+                print("Allar annir & Braut ID")
+                semClasses = [i for i in allClasses if str(i[0]) == self.lineEdit_75.text() and str(i[1]) == self.lineEdit_73.text()]
+            else:
+                print("Allar annir")
+                semClasses = [i for i in allClasses if str(i[0]) == self.lineEdit_75.text()]
+        else:
+            if self.lineEdit_73.text():
+                print("Ákveðin önn & Braut ID")
+                semClasses = [i for i in allClasses if str(i[0]) == self.lineEdit_75.text() and i[4] == self.comboBox_15.currentText() and str(i[1]) == self.lineEdit_73.text()]
+            else:
+                print("Ákveðin önn")
+                semClasses = [i for i in allClasses if str(i[0]) == self.lineEdit_75.text() and i[4] == self.comboBox_15.currentText()]
+
+        print("Nemanda ID: {}".format(self.lineEdit_75.text()))
+        print("Braut ID: {}".format(self.lineEdit_73.text()))
+        print("Önn: {}".format(self.comboBox_15.currentText()))
+        print("Niðurstaða: {}".format(semClasses))
+        print()
+
+        self.treeWidget_11.clear()
+        for i in semClasses: QtWidgets.QTreeWidgetItem(self.treeWidget_11, list(map(str, i)))
+
+    def handleExtraValNextSemSearchStud(self):
+        print("Pressed Extra Val Search")
+
+        general = GeneralSP()
+        if not general.studentsSingle(self.lineEdit_76.text()): return
+        self.lineEdit_74.setEnabled(True)
+        self.comboBox_16.setEnabled(True)
+        self.pushButton_73.setEnabled(True)
+        self.lineEdit_76.setEnabled(False)
+        self.pushButton_71.setEnabled(False)
+
+    def handleExtraValNextSemClear(self):
+        print("Pressed Extra Val Clear")
+
+        self.lineEdit_76.setEnabled(True)
+        self.lineEdit_76.clear()
+        self.lineEdit_74.setEnabled(False)
+        self.lineEdit_74.clear()
+        self.comboBox_16.setEnabled(False)
+        self.pushButton_73.setEnabled(False)
+        self.pushButton_71.setEnabled(True)
+        self.treeWidget_12.clear()
+
+    def handleExtraValNextSemSearchNextSem(self):
+        print("Pressed Extra Val NextSem")
+
+        custom = CustomSP()
+        print("StudentID: {}".format(self.lineEdit_76.text()))
+        print("TrackID: {}".format(self.lineEdit_74.text()))
+        print("CurrentSem: {}".format(self.comboBox_16.currentText()))
+        print("NextSem: {}".format(getNextSemester(self.comboBox_16.currentText())))
+
+        self.treeWidget_12.clear()
+        for i in custom.getNextClasses(self.lineEdit_76.text(), self.lineEdit_74.text(), self.comboBox_16.currentText()): QtWidgets.QTreeWidgetItem(self.treeWidget_12, list(map(str, i)))
+
 
 
 if __name__ == "__main__":

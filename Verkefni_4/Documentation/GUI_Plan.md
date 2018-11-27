@@ -113,8 +113,7 @@
 
         -   trackCoursesSingle
             `param_trackID` INT(11),
-            `param_courseNumber` CHAR(10),
-            `param_semester` TINYINT(3)
+            `param_courseNumber` CHAR(10)
 
     -   Tracks
 
@@ -230,3 +229,16 @@
     -   Tracks
 
         -   tracksDelete
+
+
+-   ### Extra
+
+    -   Val
+
+        -   Skrá áfanga á nemanda fyrir næstu önn
+
+    -   Statistics
+
+        -   Áfangafjöldi
+
+    -   TotalTrackCredits

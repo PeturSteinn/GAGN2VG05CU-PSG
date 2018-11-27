@@ -147,9 +147,15 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `DivisionsDelete` //
-CREATE PROCEDURE `DivisionsDelete` ()
+CREATE PROCEDURE `DivisionsDelete` (
+  `param_divisionID` INT
+)
 BEGIN
-
+  IF (SELECT COUNT(`divisionID`) FROM `Tracks` WHERE `divisionID` = `param_divisionID`) = 0 THEN
+    DELETE FROM `Divisions`
+    WHERE `divisionID` = `param_divisionID`;
+  END IF;
+  SELECT ROW_COUNT();
 END //
 DELIMITER ;
 
@@ -228,11 +234,18 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `RestrictorsDelete` //
-CREATE PROCEDURE `RestrictorsDelete` ()
+CREATE PROCEDURE `RestrictorsDelete` (
+  `param_courseNumber` CHAR(10),
+  `param_restrictorID` CHAR(10)
+)
 BEGIN
-
+  DELETE FROM `Restrictors`
+  WHERE `RestrictorID` = `param_restrictorID`
+  AND `CourseNumber` = `param_courseNumber`;
+  SELECT ROW_COUNT();
 END //
 DELIMITER ;
+
 
 -- /Restrictors
 -- Schools
@@ -301,9 +314,15 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `SchoolsDelete` //
-CREATE PROCEDURE `SchoolsDelete` ()
+CREATE PROCEDURE `SchoolsDelete` (
+  `param_schoolID` INT
+)
 BEGIN
-
+  IF (SELECT COUNT(`schoolID`) FROM `Divisions` WHERE `schoolID` = `param_schoolID`) = 0 THEN
+    DELETE FROM `Schools`
+    WHERE `schoolID` = `param_schoolID`;
+  END IF;
+  SELECT ROW_COUNT();
 END //
 DELIMITER ;
 
@@ -350,7 +369,7 @@ CREATE PROCEDURE `StudentCoursesList` ()
 BEGIN
   SELECT `studentID`, `trackID`, `courseNumber`, `grade`, `semester`
   FROM `StudentCourses`
-  ORDER BY `semester`, `studentID` ASC;
+  ORDER BY `studentID`; -- `semester`, `studentID` ASC;
 
 END //
 DELIMITER ;
@@ -405,15 +424,18 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `StudentCoursesDelete` //
-CREATE PROCEDURE `StudentCoursesDelete` ()
+CREATE PROCEDURE `StudentCoursesDelete` (
+  `param_studentID` INT,
+  `param_trackID` INT,
+  `param_courseNumber` CHAR(10),
+  `param_semester` CHAR(10)
+)
 BEGIN
-  IF (SELECT COUNT(`courseNumber`) FROM `TrackCourses` WHERE `courseNumber` = `param_courseNumber`) = 0 AND
-     (SELECT COUNT(`courseNumber`) FROM `Restrictors` WHERE `courseNumber` = `param_courseNumber`) = 0 AND
-     (SELECT COUNT(`restrictorID`) FROM `Restrictors` WHERE `restrictorID` = `param_courseNumber`) = 0 THEN
-     DELETE FROM `Courses`
-     WHERE `courseNumber` = `param_courseNumber`;
-  END IF;
-  SELECT ROW_COUNT();
+  DELETE FROM `StudentCourses`
+  WHERE `studentID` = `param_studentID` AND
+  `trackID` = `param_trackID` AND
+  `courseNumber` = `param_courseNumber` AND
+  `semester` = `param_semester`;
 END //
 DELIMITER ;
 
@@ -490,9 +512,15 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `StudentsDelete` //
-CREATE PROCEDURE `StudentsDelete` ()
+CREATE PROCEDURE `StudentsDelete` (
+  `param_studentID` INT
+)
 BEGIN
-
+  IF (SELECT COUNT(`studentID`) FROM `StudentCourses` WHERE `studentID` = `param_studentID`) = 0 THEN
+    DELETE FROM `Students`
+    WHERE `studentID` = `param_studentID`;
+  END IF;
+  SELECT ROW_COUNT();
 END //
 DELIMITER ;
 
@@ -544,23 +572,13 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `TrackCoursesSingle` //
 CREATE PROCEDURE `TrackCoursesSingle` (
   `param_trackID` INT(11),
-  `param_courseNumber` CHAR(10),
-  `param_semester` TINYINT(3)
+  `param_courseNumber` CHAR(10)
 )
 BEGIN
-  IF `param_semester` IS NULL THEN
-  	SELECT `trackID`, `courseNumber`, `semester`, `mandatory`
-  	FROM `TrackCourses`
-  	WHERE `trackID` = `param_trackID`
-  	AND `courseNumber` = `param_courseNumber`
-  	AND `semester` IS NULL;
-  ELSE
-    SELECT `trackID`, `courseNumber`, `semester`, `mandatory`
-    FROM `TrackCourses`
-    WHERE `trackID` = `param_trackID`
-    AND `courseNumber` = `param_courseNumber`
-    AND `semester` = `param_semester`;
-  END if;
+  SELECT `trackID`, `courseNumber`, `semester`, `mandatory`
+  FROM `TrackCourses`
+  WHERE `trackID` = `param_trackID`
+  AND `courseNumber` = `param_courseNumber`;
 END //
 DELIMITER ;
 
@@ -571,7 +589,6 @@ CREATE PROCEDURE `TrackCoursesUpdate` (
   `param_newTrackID` INT(11),
   `param_oldCourseNumber` CHAR(10),
   `param_newCourseNumber` CHAR(10),
-  `param_oldSemester` TINYINT(3),
   `param_newSemester` TINYINT(3),
   `param_newMandatory` TINYINT(3)
 )
@@ -583,17 +600,21 @@ BEGIN
   `semester` = `param_newSemester`,
   `mandatory` = `param_newMandatory`
   WHERE `trackID` = `param_oldTrackID`
-  AND `courseNumber` = `param_oldCourseNumber`
-  AND `semester` = `param_oldSemester`;
+  AND `courseNumber` = `param_oldCourseNumber`;
   SELECT ROW_COUNT();
 END //
 DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `TrackCoursesDelete` //
-CREATE PROCEDURE `TrackCoursesDelete` ()
+CREATE PROCEDURE `TrackCoursesDelete` (
+  `param_trackID` INT,
+  `param_courseNumber` CHAR(10)
+)
 BEGIN
-
+  DELETE FROM `TrackCourses`
+  WHERE `trackID` = `param_trackID` AND
+  `courseNumber` = `param_courseNumber`;
 END //
 DELIMITER ;
 
@@ -670,9 +691,17 @@ DELIMITER ;
 
 DELIMITER //
 DROP PROCEDURE IF EXISTS `TracksDelete` //
-CREATE PROCEDURE `TracksDelete` ()
+CREATE PROCEDURE `TracksDelete` (
+  `param_trackID` INT
+)
 BEGIN
-
+  IF (SELECT COUNT(`trackID`) FROM `StudentCourses` WHERE `trackID` = `param_trackID`) = 0 AND
+     (SELECT COUNT(`trackID`) FROM `Students` WHERE `trackID` = `param_trackID`) = 0 AND
+     (SELECT COUNT(`trackID`) FROM `TrackCourses` WHERE `trackID` = `param_trackID`) = 0 THEN
+    DELETE FROM `Tracks`
+    WHERE `trackID` = `param_trackID`;
+  END IF;
+  SELECT ROW_COUNT();
 END //
 DELIMITER ;
 
@@ -682,7 +711,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeCourses` //
 CREATE PROCEDURE `describeCourses`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'courses';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'courses';
 END //
 DELIMITER ;
 
@@ -690,7 +721,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeDivisions` //
 CREATE PROCEDURE `describeDivisions`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'divisions';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'divisions';
 END //
 DELIMITER ;
 
@@ -698,7 +731,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeRestrictors` //
 CREATE PROCEDURE `describeRestrictors`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'restrictors';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'restrictors';
 END //
 DELIMITER ;
 
@@ -706,7 +741,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeSchools` //
 CREATE PROCEDURE `describeSchools`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'schools';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'schools';
 END //
 DELIMITER ;
 
@@ -714,7 +751,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeStudentCourses` //
 CREATE PROCEDURE `describeStudentCourses`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'studentcourses';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'studentcourses';
 END //
 DELIMITER ;
 
@@ -722,7 +761,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeStudents` //
 CREATE PROCEDURE `describeStudents`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'students';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'students';
 END //
 DELIMITER ;
 
@@ -730,7 +771,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeTrackCourses` //
 CREATE PROCEDURE `describeTrackCourses`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'trackcourses';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'trackcourses';
 END //
 DELIMITER ;
 
@@ -738,6 +781,44 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS `describeTracks` //
 CREATE PROCEDURE `describeTracks`()
 BEGIN
-	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1' AND TABLE_NAME = 'tracks';
+	SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+  WHERE TABLE_SCHEMA = '0408982209_progresstracker_v1'
+  AND TABLE_NAME = 'tracks';
 END //
 DELIMITER ;
+
+-- Custom
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS `GetNextClasses` //
+CREATE PROCEDURE `GetNextClasses`(
+  `param_studentID` INT,
+  `param_trackID` INT,
+  `param_currSemester` CHAR(10)
+)
+BEGIN
+  SELECT `TrackCourses`.courseNumber, `Restrictors`.restrictorID, `TrackCourses`.semester, `Restrictors`.restrictorType -- `TrackCourses`.courseNumber, `TrackCourses`.trackID, `TrackCourses`.semester, `Restrictors`.courseNumber, `Restrictors`.restrictorID, `Restrictors`.restrictorType
+    FROM `TrackCourses`
+    LEFT JOIN `Restrictors` ON `TrackCourses`.courseNumber = `Restrictors`.courseNumber
+    WHERE `TrackCourses`.courseNumber
+    NOT IN (
+    	SELECT `StudentCourses`.courseNumber
+    	FROM `StudentCourses`
+    	WHERE `StudentCourses`.studentID = `param_studentID`
+    	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = `param_currSemester`)
+    )
+    AND `TrackCourses`.mandatory != 0
+    AND `TrackCourses`.trackID = `param_trackID`
+    AND
+    (`Restrictors`.restrictorID IN (
+    SELECT `StudentCourses`.courseNumber
+    	FROM `StudentCourses`
+    	WHERE `StudentCourses`.studentID = `param_studentID`
+    	AND (`StudentCourses`.grade >= 5 OR `StudentCourses`.semester = `param_currSemester`)
+    )
+    OR
+    `Restrictors`.restrictorID IS NULL);
+END //
+DELIMITER ;
+
+CALL `GetNextClasses`(3, 9, '2020H');

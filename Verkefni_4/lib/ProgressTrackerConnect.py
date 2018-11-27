@@ -19,17 +19,18 @@ class DbConnector:
         cursor = self.conn.cursor()
         try:
             if argument_list:
-                func = func_header % argument_list
+                func = "SELECT " + func_header + '({})'.format(",".join(['\'{}\'' for i in range(len(argument_list))])).format(*argument_list)
             else:
-                func = func_header
+                func = "SELECT {}()".format(func_header)
             cursor.execute(func)
             result = cursor.fetchone()
         except Error as e:
             self.status = e
             result = None
+            print(e)
         finally:
             cursor.close()
-        return result[0]
+        return result
 
     def execute_procedure(self, proc_name, argument_list=None):
         result_list = list()
@@ -109,6 +110,11 @@ class CustomSP(DbConnector):
         if result: return result[0][0]
         else: return list()
 
+    def getNextClasses(self, param_studentID, param_trackID, param_currSemester):
+        result = self.execute_procedure('GetNextClasses', [param_studentID, param_trackID, param_currSemester])
+        if result: return result
+        else: return list()
+
 class GeneralSP(DbConnector):
     def __init__(self):
         DbConnector.__init__(self)
@@ -135,9 +141,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def coursesDelete(self):
+    def coursesDelete(self, param_courseNumber):
         rows_affected = 0
-        result = self.execute_procedure('CoursesDelete', [])
+        result = self.execute_procedure('CoursesDelete', [param_courseNumber])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -163,9 +169,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def divisionsDelete(self):
+    def divisionsDelete(self, param_divisionID):
         rows_affected = 0
-        result = self.execute_procedure('DivisionsDelete', [])
+        result = self.execute_procedure('DivisionsDelete', [param_divisionID])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -191,9 +197,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def restrictorsDelete(self):
+    def restrictorsDelete(self, param_courseNumber, param_restrictorID):
         rows_affected = 0
-        result = self.execute_procedure('RestrictorsDelete', [])
+        result = self.execute_procedure('RestrictorsDelete', [param_courseNumber, param_restrictorID])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -219,9 +225,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def schoolsDelete(self):
+    def schoolsDelete(self, param_schoolID):
         rows_affected = 0
-        result = self.execute_procedure('SchoolsDelete', [])
+        result = self.execute_procedure('SchoolsDelete', [param_schoolID])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -247,9 +253,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def studentCoursesDelete(self):
+    def studentCoursesDelete(self, param_studentID, param_trackID, param_courseNumber, param_semester):
         rows_affected = 0
-        result = self.execute_procedure('StudentCoursesDelete', [])
+        result = self.execute_procedure('StudentCoursesDelete', [param_studentID, param_trackID, param_courseNumber, param_semester])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -275,9 +281,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def studentsDelete(self):
+    def studentsDelete(self, param_studentID):
         rows_affected = 0
-        result = self.execute_procedure('StudentsDelete', [])
+        result = self.execute_procedure('StudentsDelete', [param_studentID])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -292,8 +298,8 @@ class GeneralSP(DbConnector):
         if result: return result
         else: return list()
 
-    def trackCoursesSingle(self, param_trackID, param_courseNumber, param_semester=None):
-        result = self.execute_procedure('TrackCoursesSingle', [param_trackID, param_courseNumber, param_semester])
+    def trackCoursesSingle(self, param_trackID, param_courseNumber):
+        result = self.execute_procedure('TrackCoursesSingle', [param_trackID, param_courseNumber])
         if result: return result
         else: return list()
 
@@ -303,9 +309,9 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def trackCoursesDelete(self):
+    def trackCoursesDelete(self, param_trackID, param_courseNumber):
         rows_affected = 0
-        result = self.execute_procedure('TrackCoursesDelete', [])
+        result = self.execute_procedure('TrackCoursesDelete', [param_trackID, param_courseNumber])
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
@@ -331,11 +337,39 @@ class GeneralSP(DbConnector):
         if result: rows_affected = int(result[0][0])
         return rows_affected
 
-    def tracksDelete(self):
+    def tracksDelete(self, param_trackID):
         rows_affected = 0
-        result = self.execute_procedure('TracksDelete', [])
+        result = self.execute_procedure('TracksDelete', [param_trackID])
         if result: rows_affected = int(result[0][0])
         return rows_affected
+
+class CustomF(DbConnector):
+    def __init__(self):
+        DbConnector.__init__(self)
+
+    def statistics(self):
+        general = GeneralSP()
+
+        # stats = {"coursesCount": len(general.coursesList()),"divisionsCount": len(general.divisionsList()), "restrictorsCount": len(general.restrictorsList()), "schoolsCount": len(general.schoolsList()), "studentCoursesCount": len(general.studentCoursesList()), "studentsCount": len(general.studentsList()), "trackCoursesCount": len(general.trackCoursesList()), "tracksCount": len(general.tracksList())}
+        # print(len(general.coursesList()))
+        # print(len(general.divisionsList()))
+        # print(len(general.restrictorsList()))
+        # print(len(general.schoolsList()))
+        # print(len(general.studentCoursesList()))
+        # print(len(general.studentsList()))
+        # print(len(general.trackCoursesList()))
+        # print(len(general.tracksList()))
+        # result = self.execute_function('TotalTrackCredits', [9])
+        # result = self.execute_function('NumberOfCourses')
+        # result = self.execute_function('TestStoredFunction', [9, 'FDAS', 322])
+        # print(result[0])
+        # totalTrackCredits
+        # result = self.execute_function('leastRestrictedCourseNumber')
+        # print(result[0])
+        return {"coursesCount": len(general.coursesList()),"divisionsCount": len(general.divisionsList()), "restrictorsCount": len(general.restrictorsList()), "schoolsCount": len(general.schoolsList()), "studentCoursesCount": len(general.studentCoursesList()), "studentsCount": len(general.studentsList()), "trackCoursesCount": len(general.trackCoursesList()), "tracksCount": len(general.tracksList())}
+
+    def selectNextCourses(self):
+        pass
 
 class DescribeSP(DbConnector):
     def __init__(self):

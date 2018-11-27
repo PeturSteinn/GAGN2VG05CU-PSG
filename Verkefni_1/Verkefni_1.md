@@ -80,16 +80,16 @@ CALL `SingleCourse`('STÆ503');
 
 * * *
 
-#### 3:   NewCourse()
+#### 3:   AddCourse()
 
 #### Nýskráir áfanga í gagnagrunninn. Skoðið ERD myndina til að finna út hvaða gögn á að vista(hvaða færibreytur á að nota)
 
-#### NewCourse er með out parameterinn number_of_inserted_rows sem skilar fjölda þeirra raða sem vistaðar voru í gagnagrunninum.  Til þess notið þið MySQL function: row_count()
+#### AddCourse er með out parameterinn number_of_inserted_rows sem skilar fjölda þeirra raða sem vistaðar voru í gagnagrunninum.  Til þess notið þið MySQL function: row_count()
 
 ```sql
 DELIMITER //
-DROP PROCEDURE IF EXISTS `NewCourse` //
-CREATE PROCEDURE `NewCourse`(
+DROP PROCEDURE IF EXISTS `AddCourse` //
+CREATE PROCEDURE `AddCourse`(
   `param_courseNumber` CHAR(10),
   `param_courseName` VARCHAR(75),
   `param_courseCredits` TINYINT(4)
@@ -108,7 +108,7 @@ BEGIN
   SELECT ROW_COUNT();
 END //
 DELIMITER ;
-CALL`NewCourse`('test101', 'Test 101 kúrs', 3);
+CALL`AddCourse`('test101', 'Test 101 kúrs', 3);
 ```
 
 * * *

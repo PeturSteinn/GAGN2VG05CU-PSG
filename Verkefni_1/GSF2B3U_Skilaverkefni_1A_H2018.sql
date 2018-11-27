@@ -14,27 +14,27 @@ VALUES
 ('TestTrack2', 2),
 ('TestTrack3', 5);
 
-INSERT INTO TrackCourses (trackID, courseNumber, mandatory)
+INSERT INTO TrackCourses (trackID, courseNumber, semester, mandatory)
 VALUES
-	(9, 'FOR3D3U', 1),
-    (9, 'FOR3G3U', 1),
-    (9, 'FOR3L3U', 0),
-    (9, 'GSF2A3U', 1),
-    (9, 'GSF2B3U', 0),
-    (9, 'GSF3A3U', 0),
-    (9, 'GSF3B3U', 0),
-    (9, 'STÆ103', 1),
-    (9, 'STÆ203', 1),
-    (9, 'STÆ303', 1),
-    (9, 'STÆ313', 1),
-    (9, 'STÆ403', 1),
-    (9, 'STÆ503', 1),
-    (9, 'STÆ603', 0),
-    (9, 'EÐL103', 1),
-    (6, 'EÐL103', 0),
-    (6, 'STÆ103', 1),
-    (6, 'STÆ203', 1),
-    (6, 'STÆ303', 0);
+	(9, 'FOR3D3U', 3, 0),
+    (9, 'FOR3G3U', 4, 0),
+    (9, 'FOR3L3U', 5, 0),
+    (9, 'GSF2A3U', 1, 1),
+    (9, 'GSF2B3U', 2, 2),
+    (9, 'GSF3A3U', 3, 0),
+    (9, 'GSF3B3U', 4, 0),
+    (9, 'STÆ103', 1, 1),
+    (9, 'STÆ203', 2, 1),
+    (9, 'STÆ303', 3, 1),
+    (9, 'STÆ313', 3, 0),
+    (9, 'STÆ403', 4, 1),
+    (9, 'STÆ503', 5, 1),
+    (9, 'STÆ603', 6, 0),
+    (9, 'EÐL103', 1, 1),
+    (6, 'EÐL103', 1, 0),
+    (6, 'STÆ103', 1, 1),
+    (6, 'STÆ203', 2, 1),
+    (6, 'STÆ303', 3, 0);
 
 
 
@@ -68,15 +68,15 @@ END //
 DELIMITER ;
 CALL `SingleCourse`('STÆ503');
 
--- 3:   NewCourse()
+-- 3:   AddCourse()
 --  Nýskráir áfanga í gagnagrunninn.
 --  Skoðið ERD myndina til að finna út hvaða gögn á að vista(hvaða færibreytur á að nota)
---  NewCourse er með out parameterinn number_of_inserted_rows sem skilar fjölda þeirra
+--  AddCourse er með out parameterinn number_of_inserted_rows sem skilar fjölda þeirra
 --  raða sem vistaðar voru í gagnagrunninum.  Til þess notið þið MySQL function: row_count()
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS `NewCourse` //
-CREATE PROCEDURE `NewCourse`(
+DROP PROCEDURE IF EXISTS `AddCourse` //
+CREATE PROCEDURE `AddCourse`(
   `param_courseNumber` CHAR(10),
   `param_courseName` VARCHAR(75),
   `param_courseCredits` TINYINT(4)
@@ -95,7 +95,7 @@ BEGIN
   SELECT ROW_COUNT();
 END //
 DELIMITER ;
-CALL`NewCourse`('test101', 'Test 101 kúrs', 3);
+CALL`AddCourse`('test101', 'Test 101 kúrs', 3);
 
 -- 4:	UpdateCourse()
 --  Hér eru notaðar sömu færibreytur og í lið 3.  Áfanganúmerið er notað til að uppfæra réttan kúrs

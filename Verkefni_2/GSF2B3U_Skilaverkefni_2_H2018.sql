@@ -145,7 +145,7 @@ CALL `StudentCourseCreditSum`(3);
 -- them into the table that stores the student courses. Put this cursor in a stored
 -- procedure that can be called “AddMandatoryCourses” and is run when a student
 -- selects courses for the first time. The selection process could be implemented
--- in another stored procedure, perhaps called NewStudentCourses. In that one a
+-- in another stored procedure, perhaps called AddStudentCourses. In that one a
 -- check is performed to see if the student has chosen courses before and if that
 -- is then the AddMandatoryCourses has already been run and is NOT run again.
 
@@ -250,8 +250,8 @@ SELECT `TrackCourses`.courseNumber, `TrackCourses`.trackID, `TrackCourses`.semes
   `Restrictors`.restrictorID IS NULL);
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS `NewStudentCourses` //
-CREATE PROCEDURE `NewStudentCourses` (
+DROP PROCEDURE IF EXISTS `AddStudentCourses` //
+CREATE PROCEDURE `AddStudentCourses` (
   param_studentID INT,
   param_trackID INT,
   param_currSemester CHAR(10),
@@ -274,7 +274,7 @@ DELIMITER ;
 -- In order to not allow for duplicates
 ALTER TABLE `StudentCourses` ADD UNIQUE `unique_index_st_tr_co_se`(`studentID`, `trackID`, `courseNumber`, `semester`);
 
-CALL `NewStudentCourses`(1, 9, '2019V', '2020H', 'test101');
+CALL `AddStudentCourses`(1, 9, '2019V', '2020H', 'test101');
 
 /*
 SELECT * FROM StudentCourses WHERE studentID = 1;
